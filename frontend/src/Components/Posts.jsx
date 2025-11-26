@@ -6,7 +6,11 @@ import axios from 'axios';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 function Posts() {
 
+
+
     const [posts, setPosts] = useState([]);
+    const [likedPosts, setLikedPosts] = useState([]);
+    const userId = localStorage.getItem('userId');
     const userIcon = <FontAwesomeIcon icon={faUser} />
     const heartIcon = <FontAwesomeIcon icon={faHeart} />
     const commentIcon = <FontAwesomeIcon icon={faComments} />
@@ -21,6 +25,48 @@ function Posts() {
                 console.error('Error fetching posts:', error);
             });
     }, []);
+
+    const handleLike = (postId) => {
+        if (!userId) {
+            alert('Please log in to like posts');
+            return;
+        }
+
+        axios.post('http://localhost:3001/api/like-unlike', { postId, userId })
+            .then(response => {
+                console.log('Post liked:', response.data);
+
+                const { liked, likes } = response.data;
+
+                setLikedPosts((prevLikedPosts) => {
+                    if (liked) {
+
+                        return prevLikedPosts.includes(postId)
+                            ? prevLikedPosts
+                            : [...prevLikedPosts, postId];
+                    } else {
+                        return prevLikedPosts.filter((id) => id !== postId);
+                    }
+                });
+
+                setPosts((prevPosts) =>
+                    prevPosts.map((post) =>
+                        post.id === postId
+                            ? {
+                                ...post,
+                                likes,
+                            }
+                            : post
+                    )
+                );
+            })
+            .catch(error => {
+                console.error('Error liking post:', error);
+                alert('Error liking post');
+
+
+            });
+    }
 
     return (
         <div className='flex flex-col items-center gap-4 mt-20 ml-0 md:ml-40 min-h-screen'>
@@ -41,9 +87,15 @@ function Posts() {
                     </div>
                     <div>
                         <div className='flex flex-row gap-10 px-4 mt-1'>
-                            <div className='flex flex-row items-center justify-center gap-1 text-gray-600'>
+                            <div
+                                className='flex flex-row items-center justify-center gap-1 text-gray-600 cursor-pointer'
+                                onClick={() => handleLike(post.id)}
+                                style={{ color: likedPosts.includes(post.id) ? 'orange' : 'black' }}
+                            >
                                 {heartIcon}
-                                <div>{post.likes?.length || 0}</div>
+                                <div>
+                                    {post.likes?.length || 0}
+                                </div>
                             </div>
                             <div className='flex flex-row items-center justify-center gap-1 text-gray-600'>
                                 {commentIcon}

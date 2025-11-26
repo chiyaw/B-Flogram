@@ -83,15 +83,22 @@ app.get('/api/profile/:id', async (req, res) => {
 app.get('/api/user-posts/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
-        const posts = await PostModel.find({
-            user: userId
-        })
-        .populate('user')
-        
-        res.json({
-            success: true,
-            posts: posts
-        });
+      const posts = await PostModel.find({
+          user: userId
+      }).populate('user').sort({ createdAt: -1 });
+      
+      res.json({
+          success: true,
+          posts: posts.map(post => ({
+            id: post._id,
+            description: post.description,
+            image: post.image,
+            comments: post.comments,
+            likes: post.likes,
+            user: post.user,
+            created_at: post.createdAt
+          }))
+      });
     } catch(err) {
         res.status(500).json({ 
             success: false, 
@@ -131,7 +138,7 @@ app.post('/api/addpost', async (req, res) => {
 
 app.get('/api/posts', async (req, res) => {
   try {
-    const posts = await PostModel.find().populate('user').sort({ createdAt: -1 }); // populate user details if needed
+    const posts = await PostModel.find().populate('user').sort({ createdAt: -1 }); 
 
     return res.status(200).json({
       success: true,
@@ -161,6 +168,49 @@ app.get('/api/all-users', async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 });
+
+app.post('/api/like-unlike', async (req, res) => {
+  try {
+    const { postId, userId } = req.body;
+    const post = await PostModel.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ success: false, error: 'Post not found' });
+    }
+
+    const existingIndex = post.likes.findIndex(
+      (like) => like.user && like.user.toString() === userId
+    );
+
+    let liked;
+
+    if (existingIndex === -1) {
+      // LIKE: add a new like
+      post.likes.push({
+        user: userId,
+        date: new Date().toISOString(),
+      });
+      liked = true;
+    } else {
+      post.likes.splice(existingIndex, 1);
+      liked = false;
+    }
+
+    await post.save();
+
+    return res.status(200).json({
+      success: true,
+      liked,
+      likes: post.likes,
+      likesCount: post.likes.length,
+      unLiked: !liked,
+      unLikedId: !liked ? userId : null,
+    });
+  } catch (err) {
+    console.error("Error liking/unliking post:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+})
 
 
 app.listen(port, () => {

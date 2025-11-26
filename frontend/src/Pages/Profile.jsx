@@ -8,6 +8,7 @@ import { format } from "date-fns/format";
 import ProfilePost from "../Components/ProfilePost";
 function Profile() {
   const userId = localStorage.getItem("userId");
+  const [likedPosts, setLikedPosts] = useState([]);
   const [followers, setFollowers] = useState(0);
   const [following, setFollowing] = useState(0);
   const [userName, setUserName] = useState("");
@@ -21,6 +22,8 @@ function Profile() {
       console.error("No userId found in localStorage");
       return;
     }
+  
+
 
     axios
       .get(`http://localhost:3001/api/profile/${userId}`)
@@ -85,7 +88,7 @@ function Profile() {
                   <div className="flex flex-row gap-2">
                     <div>Account is :</div>
                     <div>
-                      <Space vertical>
+                      <Space direction="vertical">
                         <Switch
                           checkedChildren="Private"
                           unCheckedChildren="Public"

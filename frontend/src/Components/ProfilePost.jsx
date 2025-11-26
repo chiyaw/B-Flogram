@@ -8,6 +8,7 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 function ProfilePost({ userId }) {
 
     const [posts, setPosts] = useState([]);
+    const [likedPosts, setLikedPosts] = useState([]);
 
     const navigate = useNavigate();
     const userIcon = <FontAwesomeIcon icon={faUser} />
@@ -15,6 +16,8 @@ function ProfilePost({ userId }) {
     const commentIcon = <FontAwesomeIcon icon={faComments} />
     
     useEffect(() => {
+        if (!userId) return;
+
         axios.get(`http://localhost:3001/api/user-posts/${userId}`)
             .then(response => {
                 console.log('Posts fetched:', response.data);
@@ -23,7 +26,51 @@ function ProfilePost({ userId }) {
             .catch(error => {
                 console.error('Error fetching posts:', error);
             });
-    }, []);
+    }, [userId]);
+
+
+
+    const handleLike = (postId) => {
+        if (!userId) {
+            alert('Please log in to like posts');
+            return;
+        }
+    
+        axios.post('http://localhost:3001/api/like-unlike', { postId, userId })
+            .then(response => {
+                console.log('Post liked:', response.data);
+    
+                const { liked, likes } = response.data;
+    
+                setLikedPosts((prevLikedPosts) => {
+                    if (liked) {
+    
+                        return prevLikedPosts.includes(postId)
+                            ? prevLikedPosts
+                            : [...prevLikedPosts, postId];
+                    } else {
+                        return prevLikedPosts.filter((id) => id !== postId);
+                    }
+                });
+    
+                setPosts((prevPosts) =>
+                    prevPosts.map((post) =>
+                        post.id === postId
+                            ? {
+                                ...post,
+                                likes,
+                            }
+                            : post
+                    )
+                );
+            })
+            .catch(error => {
+                console.error('Error liking post:', error);
+                alert('Error liking post');
+    
+    
+            });
+    }
 
     return (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10 px-4 md:px-8 max-w-6xl mx-auto'>
@@ -45,7 +92,8 @@ function ProfilePost({ userId }) {
                         
 
                         <div className='flex flex-row gap-4 mb-2'>
-                            <div className='flex flex-row items-center gap-1 text-gray-600 text-sm'>
+                            <div className='flex flex-row items-center gap-1 text-gray-600 text-sm' onClick={() => handleLike(post.id)}
+                                style={{ color: likedPosts.includes(post.id) ? 'orange' : 'black' }} >
                                 {heartIcon}
                                 <span>{post.likes?.length || 0}</span>
                             </div>
