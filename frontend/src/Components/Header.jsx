@@ -11,12 +11,11 @@ function Header() {
     
     const userIcon = <FontAwesomeIcon icon={faUser} />
     const logoutIcon = <FontAwesomeIcon icon={faRightFromBracket} />
-    const logOut= 'Logout'
 
     useEffect(() => {
         const userId = localStorage.getItem('userId')
         if (userId) {
-            axios.get(`http://localhost:3001/user/${userId}`)
+            axios.get(`http://localhost:3001/api/user/${userId}`)
                 .then(response => {
                     setUsername(response.data.user)
                 })
@@ -38,7 +37,7 @@ function Header() {
       <div className="fixed top-0 left-0 right-0 flex flex-row justify-between bg-orange-100/80 backdrop-blur-md text-gray-800 items-center shadow-2xl px-20 py-4 z-20">
         <div className="flex flex-row text-lg">
             <div className='px-1 text-gray-600'> {userIcon} </div>
-            <div className ='px-1 text-gray-600'> {username || 'Loading...'}</div>
+            <div className ='px-1 text-gray-600'> {username}</div>
         </div>
         <div>
             <h1 className='antialiased font-bold text-3xl md:text-4xl'>

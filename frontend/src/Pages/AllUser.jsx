@@ -1,5 +1,7 @@
 import Header from "../Components/Header"
 import Navigation from "../Components/Navigation"
+import Users from "../Components/Users"
+
 
 function AllUser() {
 
@@ -9,7 +11,7 @@ function AllUser() {
             <Header/>
             <Navigation/>
             <div className="ml-44 mt-20">
-                <h1 className="text-2xl font-bold">All Users</h1>
+              <Users/>
             </div>
         </div>
         

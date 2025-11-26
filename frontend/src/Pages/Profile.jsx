@@ -5,7 +5,7 @@ import axios from "axios";
 import { CheckOutlined, CloseOutlined } from "@ant-design/icons";
 import { Space, Switch } from "antd";
 import { format } from "date-fns/format";
-
+import ProfilePost from "../Components/ProfilePost";
 function Profile() {
   const userId = localStorage.getItem("userId");
   const [followers, setFollowers] = useState(0);
@@ -15,38 +15,38 @@ function Profile() {
   const [createdAt, setCreatedAt] = useState("");
   const [bio, setBio] = useState("");
   const [privateAccount, setPrivateAccount] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!userId) {
       console.error("No userId found in localStorage");
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
     axios
-      .get(`http://localhost:3001/profile/${userId}`)
+      .get(`http://localhost:3001/api/profile/${userId}`)
       .then((response) => {
-        console.log("✅ Profile data fetched:");
+        console.log("✅ Profile data fetched:", response.data);
 
-        const userData = response.data;
+        const userData = response.data.user; // Access the user object
 
         setFollowers(userData.followers ? userData.followers.length : 0);
         setFollowing(userData.followings ? userData.followings.length : 0);
 
-        setUserName(userData.user);
-        setProfilePic(userData.profilePic);
-        setCreatedAt(format(new Date(userData.createdAt), "dd-MM-yyyy"));
-        setBio(userData.bio);
-        setPrivateAccount(userData.privateAccount);
+        setUserName(userData.user); // This is the username string
+        setProfilePic(userData.profilePic || "");
+        
+        // Only format date if it exists
+        if (userData.createdAt) {
+          setCreatedAt(format(new Date(userData.createdAt), "dd-MM-yyyy"));
+        }
+        
+        setBio(userData.bio || "");
+        setPrivateAccount(userData.privateAccount || false);
 
         console.log("Its Happening");
-        setLoading(false);
       })
       .catch((error) => {
         console.error("❌ Error fetching profile:", error);
-        setLoading(false);
       });
   }, [userId]);
   return (
@@ -55,12 +55,8 @@ function Profile() {
         <Header />
         <Navigation />
         <div className="ml-44 mt-20">
-          {loading ? (
-            <div className="mx-75 mt-20 p-4 text-center">
-              <p className="text-xl">Loading profile...</p>
-            </div>
-          ) : (
-            <div className="flex flex-row mx-75 mt-20 p-4 rounded-b-xl bg-orange-100/50 shadow-xl/30 ">
+          
+            <div className="flex flex-row mx-75 mt-30 p-4 rounded-b-xl bg-orange-100/50 shadow-xl/30 ">
               <div className="flex flex-col w-1/2 justify-around m-2 p-2">
                 <div className="flex flex-row gap-4 items-center m-2 p-2">
                   <div>
@@ -128,9 +124,10 @@ function Profile() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
+
+        <ProfilePost userId={userId} />
       </div>
+    </div>
     </>
   );
 }
