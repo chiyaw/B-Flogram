@@ -12,6 +12,8 @@ app.use(express.json({ limit: '50mb' }))
 app.use(express.urlencoded({ limit: '50mb', extended: true }))
 app.use(cors())
 
+
+// Register API
 app.post('/api/register', (req, res) => {
     console.log('📝 Register request received:', req.body);
     UserModel.create(req.body)
@@ -26,6 +28,7 @@ app.post('/api/register', (req, res) => {
 });
 
 
+// Login API
 app.post('/api/login', (req, res) => {
     const {user, password} = req.body;
     UserModel.findOne({user:user})
@@ -42,6 +45,7 @@ app.post('/api/login', (req, res) => {
     })
 })
 
+// Get User API
 app.get('/api/user/:id', (req, res) => {
     const userId = req.params.id;
     UserModel.findById(userId)
@@ -66,6 +70,7 @@ app.get('/api/user/:id', (req, res) => {
     })
 })
 
+// Get Profile API
 app.get('/api/profile/:id', async (req, res) => {
     const userId = req.params.id;
     const user = await UserModel.findById(userId);
@@ -80,6 +85,7 @@ app.get('/api/profile/:id', async (req, res) => {
     }
 })
 
+// Get User Posts API
 app.get('/api/user-posts/:userId', async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -108,12 +114,14 @@ app.get('/api/user-posts/:userId', async (req, res) => {
 })
 
 
+// Add Post API
 app.post('/api/addpost', async (req, res) => {
     try {
       console.log("📝 New post data received:", req.body);
   
       const newPost = await PostModel.create({
         description: req.body.description,
+        userProfilePic: req.body.userProfilePic,
         image: req.body.image,
         user: req.body.user,
         comments: req.body.comments || [],
@@ -136,6 +144,7 @@ app.post('/api/addpost', async (req, res) => {
   });
   
 
+// Get Posts API
 app.get('/api/posts', async (req, res) => {
   try {
     const posts = await PostModel.find().populate('user').sort({ createdAt: -1 }); 
@@ -159,6 +168,7 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+// Get All Users API
 app.get('/api/all-users', async (req, res) => {
   try {
     const users = await UserModel.find();
@@ -169,6 +179,7 @@ app.get('/api/all-users', async (req, res) => {
   }
 });
 
+// Like/Unlike Post API
 app.post('/api/like-unlike', async (req, res) => {
   try {
     const { postId, userId } = req.body;
@@ -211,6 +222,76 @@ app.post('/api/like-unlike', async (req, res) => {
     return res.status(500).json({ success: false, error: err.message });
   }
 })
+
+
+
+// Get Followers API
+app.get('/api/followers/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await UserModel.findById(userId);
+    res.json(user.followers);
+  } catch (err) {
+    console.error("Error fetching followers:", err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+})
+
+
+
+
+// app.post('/api/comment-post', async (req, res) => {
+//     try {
+//       const { postId, userId } = req.body;
+//       const post = await PostModel.findById(postId);
+  
+//       if (!post) {
+//         return res.status(404).json({ success: false, error: 'Post not found' });
+//       }
+  
+//       const existingIndex = post.comments.findIndex(
+//         (comment) => comment.user && comment.user.toString() === userId
+//       );
+  
+//       let commented;
+  
+//       if (existingIndex === -1) {
+//         // LIKE: add a new like
+//         post.comments.push({
+//           user: userId,
+//           date: new Date().toISOString(),
+//         });
+//         commented = true;
+//       } else {
+//         post.comments.splice(existingIndex, 1);
+//         commented = false;
+//       }
+  
+//       await post.save();
+  
+//       return res.status(200).json({
+//         success: true,
+//         liked,
+//         likes: post.likes,
+//         likesCount: post.likes.length,
+//         unLiked: !liked,
+//         unLikedId: !liked ? userId : null,
+//       });
+//     } catch (err) {
+//       console.error("Error liking/unliking post:", err);
+//       return res.status(500).json({ success: false, error: err.message });
+//     }
+//   })
+  
+
+
+
+
+
+// app.use('/', trackingRouter)
+
+
+
 
 
 app.listen(port, () => {
