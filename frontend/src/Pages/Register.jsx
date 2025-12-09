@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../../constant";
 
 function Register() {
 
@@ -12,7 +13,7 @@ function Register() {
     const handleSubmit = (e) => {
         e.preventDefault()
         console.log('Sending:', {user});
-        axios.post('http://localhost:3001/api/register', {user, password})
+        axios.post(`${BACKEND_URL}/api/register`, {user, password})
         .then(result => {
             console.log('✅ Success');
             navigate('/login')

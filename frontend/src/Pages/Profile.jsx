@@ -23,7 +23,7 @@ function Profile() {
     }
 
     axios
-      .get(`http://localhost:3001/api/profile/${userId}`)
+      .get(`${process.env.REACT_APP_BACKEND_URL}/api/profile/${userId}`)
       .then((response) => {
 
         const userData = response.data.user;

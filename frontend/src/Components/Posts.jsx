@@ -4,6 +4,7 @@ import { faHeart, faComments } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Comments from './Comments';
+import { BACKEND_URL } from '../../constant';
 function Posts() {
 
 
@@ -16,7 +17,7 @@ function Posts() {
     
     
     useEffect(() => {
-        axios.get('http://localhost:3001/api/posts')
+        axios.get(`${BACKEND_URL}/api/posts`)
             .then(response => {
                 console.log('Posts fetched:', response.data);
 
@@ -33,7 +34,7 @@ function Posts() {
             return;
         }
 
-        axios.post('http://localhost:3001/api/like-unlike', { postId, userId })
+        axios.post(`${BACKEND_URL}/api/like-unlike`, { postId, userId })
             .then(response => {
                 console.log('Post liked:', response.data);
 

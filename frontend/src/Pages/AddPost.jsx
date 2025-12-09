@@ -2,6 +2,7 @@ import Header from "../Components/Header"
 import Navigation from "../Components/Navigation"
 import React, { useState } from 'react';
 import axios from 'axios';
+import { BACKEND_URL } from '../../constant';
 
 function AddPost() {
   const [description, setDescription] = useState('');
@@ -33,6 +34,7 @@ function AddPost() {
     }
 
     try {
+      const backendUrl = `${BACKEND_URL}/api/addpost`;
       const postData = {
         description: description,
         image: previewUrl,
@@ -41,7 +43,7 @@ function AddPost() {
         likes: []
       };
 
-      const response = await axios.post('http://localhost:3001/api/addpost', postData, {
+      const response = await axios.post(backendUrl, postData, {
         headers: {
           'Content-Type': 'application/json'
         }

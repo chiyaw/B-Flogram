@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { BACKEND_URL } from "../../constant";
 function ProfilePost({ userId }) {
   const [posts, setPosts] = useState([]);
   const [likedPosts, setLikedPosts] = useState([]);
@@ -17,7 +18,7 @@ function ProfilePost({ userId }) {
     if (!userId) return;
 
     axios
-      .get(`http://localhost:3001/api/user-posts/${userId}`)
+      .get(`${BACKEND_URL}/api/user-posts/${userId}`)
       .then((response) => {
         console.log("Posts fetched:", response.data);
         setPosts(response.data.posts);
@@ -34,7 +35,7 @@ function ProfilePost({ userId }) {
     }
 
     axios
-      .post("http://localhost:3001/api/like-unlike", { postId, userId })
+      .post(`${BACKEND_URL}/api/like-unlike`, { postId, userId })
       .then((response) => {
         console.log("Post liked:", response.data);
 

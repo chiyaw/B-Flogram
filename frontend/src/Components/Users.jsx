@@ -4,6 +4,7 @@ import { faUserPlus, faUsers } from '@fortawesome/free-solid-svg-icons';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { BACKEND_URL } from '../../constant';
 
 function Users({ userId }) {
 
@@ -14,7 +15,7 @@ function Users({ userId }) {
     const followingIcon = <FontAwesomeIcon icon={faUserPlus} />
     
     useEffect(() => {
-        axios.get(`http://localhost:3001/api/all-users`)
+        axios.get(`${BACKEND_URL}/api/all-users`)
             .then(response => {
                 console.log('Users fetched:', response.data);
                 setUsers(response.data);

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../../constant";
 
 function Login() {
   const [user, setUser] = useState()
@@ -10,7 +11,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post('http://localhost:3001/api/login', { user, password })
+    axios.post(`${BACKEND_URL}/api/login`, { user, password })
       .then(result => {
         console.log('✅ Success');
         if (result.data.message === "Success") {

@@ -3,6 +3,7 @@ import { faUser, faRightFromBracket,  } from '@fortawesome/free-solid-svg-icons'
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { BACKEND_URL } from '../../constant';
 
 function Header() {
 
@@ -15,7 +16,7 @@ function Header() {
     useEffect(() => {
         const userId = localStorage.getItem('userId')
         if (userId) {
-            axios.get(`http://localhost:3001/api/user/${userId}`)
+            axios.get(`${BACKEND_URL}/api/user/${userId}`)
                 .then(response => {
                     setUsername(response.data.user)
                 })
