@@ -1,9 +1,8 @@
 const express = require('express');
-const port = 3001;
+const port = process.env.VITE_BACKEND_URL;
 const dbConnection = require("./db");
 const UserModel = require("./models/userModel")
 const PostModel = require("./models/postModel")
-
 const cors = require('cors')
 
 
