@@ -42,7 +42,7 @@ function Header() {
         </div>
         <div>
             <h1 className='antialiased font-bold text-3xl md:text-4xl'>
-                Bogram
+                Flogram
             </h1>
         </div>
         <div className="flex flex-row text-lg">
